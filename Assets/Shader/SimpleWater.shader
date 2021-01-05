@@ -92,7 +92,7 @@
 #if _FOAM_NONE
                 return _Color * nl + float4(ShadeSH9(half4(normal, 1)), 0) + skyColor * _RelectionIntensity;
 #else
-                float4 depth = SAMPLE_DEPTH_TEXTURE_PROJ(_CameraDepthTexture, i.screen_pos);
+                float depth = SAMPLE_DEPTH_TEXTURE_PROJ(_CameraDepthTexture, i.screen_pos).r;
                 float viewZ = LinearEyeDepth(depth);
                 float foamLine =  saturate(_EdgeWidth * (viewZ - i.screen_pos.w));
 #if _FOAM_SIMPLE
