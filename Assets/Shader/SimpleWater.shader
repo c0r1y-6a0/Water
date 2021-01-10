@@ -70,9 +70,11 @@
 
 #if ENABLE_ANIMATION
                 float4 noise = tex2Dlod(_NoiseTex, float4(v.texCoord.xy, 0, 0));
-                float co =  _MyTime * _WaveSpeed * noise;
-                v.vertex.x += sin(2*co) * _WaveAmp;
-                v.vertex.y += cos(co) * _WaveAmp;
+                float co =  _MyTime * _WaveSpeed * noise.r;
+                float p1 = sin(2*co) * _WaveAmp;
+                v.vertex.x += p1;
+                v.vertex.y += (cos(co) * _WaveAmp);
+                v.vertex.z += p1;
 #endif
 
                 o.vertex = UnityObjectToClipPos(v.vertex);

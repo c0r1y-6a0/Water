@@ -6,10 +6,17 @@ public class Wave: MonoBehaviour
     public float MeshSize;
     public int GridCount;
 
+    public Texture2D NoiseTex;
+
+    public float WaveSpeed;
+    public float WaveAmp;
+
     private Material m_mat;
 
+    private Mesh m_mesh;
+
     // Use this for initialization
-    void Start()
+    void Awake()
     {
         GetComponent<MeshFilter>().mesh = Gen();
         m_mat = GetComponent<MeshRenderer>().sharedMaterial;
@@ -19,12 +26,35 @@ public class Wave: MonoBehaviour
     void Update()
     {
         m_mat.SetFloat("_MyTime", Time.realtimeSinceStartup);
-    }
-    private Mesh m_mesh;
+        m_mesh.vertices = GenVertices();
 
-    private int GetNoiseIndex(int x)
+        if(Input.GetMouseButtonDown(0))
+        {
+            var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+            RaycastHit hit;
+            Physics.Raycast(ray, out hit);
+            Debug.Log("click world pos" + hit.point);
+            var wavePos = GetWavePos(hit.point);
+            Debug.Log("WavePos " + wavePos.y);
+        }
+    }
+
+    private Vector3 GetWavePos(Vector3 worldPos)
     {
-        return x * 1 + 1;
+        var scale = new Vector3(1 / transform.localScale.x, 0, 1/transform.localScale.z);
+        var localPox = Vector3.Scale(transform.position - worldPos, scale);
+        Debug.Log("local pos " + localPox);
+
+
+        Color noise = NoiseTex.GetPixelBilinear(localPox.x / (float)MeshSize , localPox.z / (float)MeshSize);
+        Debug.Log("Noise " + noise);
+        float co = noise.r * Time.realtimeSinceStartup * WaveSpeed;
+        float p1 = Mathf.Sin(2*co) * WaveAmp;
+        float x = localPox.x + p1;
+        float y = Mathf.Cos(co) * WaveAmp;
+        float z = localPox.z + p1;
+
+        return new Vector3(x,y,z);
     }
 
     private int[] GenTriangles()
@@ -61,14 +91,21 @@ public class Wave: MonoBehaviour
 
         int vn = verticeCount * verticeCount;
         var vecs = new Vector3[vn];
-        for (int y = 0; y < verticeCount; y++)
+        for (int z = 0; z < verticeCount; z++)
         {
             for (int x = 0; x < verticeCount; x++)
             {
-                vecs[y * verticeCount + x] = new Vector3(
-                    (x / (float)GridCount - 0.5f) * MeshSize,
-                    0,
-                    (y / (float)GridCount - 0.5f) * MeshSize);
+                var localX = (x / (float)GridCount - 0.5f) * MeshSize;
+                var localZ = (z / (float)GridCount - 0.5f) * MeshSize;
+
+                Color noise = NoiseTex.GetPixelBilinear( x / (float)GridCount, z / (float)GridCount);
+                float co = noise.r * Time.realtimeSinceStartup * WaveSpeed;
+                float p1 = Mathf.Sin(2*co) * WaveAmp;
+                vecs[z * verticeCount + x] = new Vector3(
+                    localX + p1,
+                    Mathf.Cos(co) * WaveAmp,
+                    localZ 
+                    );
             }
         }
         return vecs;
@@ -95,7 +132,7 @@ public class Wave: MonoBehaviour
         return uv;
     }
 
-    public Mesh Gen()
+    private Mesh Gen()
     {
         m_mesh = new Mesh();
         m_mesh.vertices = GenVertices();
