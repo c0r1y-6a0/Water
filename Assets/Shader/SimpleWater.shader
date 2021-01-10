@@ -18,6 +18,13 @@
     {
         Tags { "RenderType"="Transparent" "LightMode"="ForwardBase"}
         Blend SrcAlpha OneMinusSrcAlpha
+        ZWrite Off
+
+        Stencil{
+            Ref 0
+            Comp Equal
+        }
+
         Pass
         {
             HLSLPROGRAM
@@ -55,6 +62,7 @@
             float _WaveAmp;
 
             float _RelectionIntensity;
+            float _MyTime;
 
             v2f vert (appdata v)
             {
@@ -62,8 +70,8 @@
 
 #if ENABLE_ANIMATION
                 float4 noise = tex2Dlod(_NoiseTex, float4(v.texCoord.xy, 0, 0));
-                float co = _Time * _WaveSpeed * noise;
-                v.vertex.x += sin(co) * _WaveAmp;
+                float co =  _MyTime * _WaveSpeed * noise;
+                v.vertex.x += sin(2*co) * _WaveAmp;
                 v.vertex.y += cos(co) * _WaveAmp;
 #endif
 
@@ -90,18 +98,18 @@
                 float3 diffuse = nl * _LightColor0;
 
 #if _FOAM_NONE
-                return _Color * nl + float4(ShadeSH9(half4(normal, 1)), 0) + skyColor * _RelectionIntensity;
+                return _Color * nl + float4(ShadeSH9(half4(normal, 1)), 0) * 0.1 + skyColor * _RelectionIntensity;
 #else
                 float depth = SAMPLE_DEPTH_TEXTURE_PROJ(_CameraDepthTexture, i.screen_pos).r;
                 float viewZ = LinearEyeDepth(depth);
                 float foamLine =  saturate(_EdgeWidth * (viewZ - i.screen_pos.w));
 #if _FOAM_SIMPLE
-                float4 col = _Color + (1 - foamLine) * _EdgeColor;;
+                float4 col = _Color ;//+ (1 - foamLine) * _EdgeColor;;
 #elif _FOAM_RAMP
                 float4 foamRamp = tex2D(_DepthRampTex, float2(foamLine, 0.1));
                 float4 col = _Color * foamRamp;
 #endif
-                return col * nl + float4(ShadeSH9(half4(normal, 1)), 0) + skyColor * _RelectionIntensity;
+                return col * nl + float4(ShadeSH9(half4(normal, 1)), 0) * 0.1 + skyColor * _RelectionIntensity + (1 - foamLine) * _EdgeColor;
 #endif
             }
             ENDHLSL
