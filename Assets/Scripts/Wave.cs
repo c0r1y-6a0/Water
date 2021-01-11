@@ -33,28 +33,22 @@ public class Wave: MonoBehaviour
             var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
             RaycastHit hit;
             Physics.Raycast(ray, out hit);
-            Debug.Log("click world pos" + hit.point);
             var wavePos = GetWavePos(hit.point);
-            Debug.Log("WavePos " + wavePos.y);
         }
     }
 
-    private Vector3 GetWavePos(Vector3 worldPos)
+    public Vector3 GetWavePos(Vector3 worldPos, float yAmp = 1)
     {
-        var scale = new Vector3(1 / transform.localScale.x, 0, 1/transform.localScale.z);
-        var localPox = Vector3.Scale(transform.position - worldPos, scale);
-        Debug.Log("local pos " + localPox);
-
+        var localPox = transform.worldToLocalMatrix.MultiplyPoint3x4(worldPos);
 
         Color noise = NoiseTex.GetPixelBilinear(localPox.x / (float)MeshSize , localPox.z / (float)MeshSize);
-        Debug.Log("Noise " + noise);
         float co = noise.r * Time.realtimeSinceStartup * WaveSpeed;
         float p1 = Mathf.Sin(2*co) * WaveAmp;
         float x = localPox.x + p1;
-        float y = Mathf.Cos(co) * WaveAmp;
+        float y = Mathf.Cos(co) * WaveAmp * yAmp;
         float z = localPox.z + p1;
 
-        return new Vector3(x,y,z);
+        return new Vector3(x,y,z) + transform.position;
     }
 
     private int[] GenTriangles()
