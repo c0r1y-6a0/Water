@@ -104,14 +104,14 @@
 #else
                 float depth = SAMPLE_DEPTH_TEXTURE_PROJ(_CameraDepthTexture, i.screen_pos).r;
                 float viewZ = LinearEyeDepth(depth);
-                float foamLine =  saturate(_EdgeWidth * (viewZ - i.screen_pos.w));
+                float foamLine =  step(i.screen_pos.w, viewZ) * saturate(_EdgeWidth / (viewZ - i.screen_pos.w));
 #if _FOAM_SIMPLE
                 float4 col = _Color ;//+ (1 - foamLine) * _EdgeColor;;
 #elif _FOAM_RAMP
                 float4 foamRamp = tex2D(_DepthRampTex, float2(foamLine, 0.1));
                 float4 col = _Color * foamRamp;
 #endif
-                return col * nl + float4(ShadeSH9(half4(normal, 1)), 0) * 0.1 + skyColor * _RelectionIntensity + (1 - foamLine) * _EdgeColor;
+                return col * nl + float4(ShadeSH9(half4(normal, 1)), 0) * 0.1 + skyColor * _RelectionIntensity +  foamLine * _EdgeColor;
 #endif
             }
             ENDHLSL
