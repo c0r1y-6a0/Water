@@ -20,13 +20,19 @@ public class Wave: MonoBehaviour
     {
         GetComponent<MeshFilter>().mesh = Gen();
         m_mat = GetComponent<MeshRenderer>().sharedMaterial;
+        float uvScale = 1 / MeshSize;
+        m_mat.SetFloat("_UVScale", uvScale);
+        float gridSize = MeshSize / (float)GridCount;
+        m_mat.SetFloat("_GridSize", gridSize);
+        Debug.Log(uvScale);
+        Debug.Log(gridSize);
     }
 
     // Update is called once per frame
     void Update()
     {
         m_mat.SetFloat("_MyTime", Time.realtimeSinceStartup);
-        m_mesh.vertices = GenVertices();
+        //m_mesh.vertices = GenVertices();
 
         if(Input.GetMouseButtonDown(0))
         {
@@ -92,6 +98,7 @@ public class Wave: MonoBehaviour
                 var localX = (x / (float)GridCount - 0.5f) * MeshSize;
                 var localZ = (z / (float)GridCount - 0.5f) * MeshSize;
 
+                /*
                 Color noise = NoiseTex.GetPixelBilinear( x / (float)GridCount, z / (float)GridCount);
                 float co = noise.r * Time.realtimeSinceStartup * WaveSpeed;
                 float p1 = Mathf.Sin(2*co) * WaveAmp;
@@ -100,6 +107,8 @@ public class Wave: MonoBehaviour
                     Mathf.Cos(co) * WaveAmp,
                     localZ 
                     );
+                */
+                vecs[z * verticeCount + x] = new Vector3( localX, 0, localZ);
             }
         }
         return vecs;

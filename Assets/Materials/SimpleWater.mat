@@ -9,7 +9,7 @@ Material:
   m_PrefabAsset: {fileID: 0}
   m_Name: SimpleWater
   m_Shader: {fileID: 4800000, guid: 3a31a0f63c699461aaaaa743553ec03e, type: 3}
-  m_ShaderKeywords: _FOAM_NO_FOAM _FOAM_RAMP
+  m_ShaderKeywords: ENABLE_ANIMATION ENABLE_NOISE FLAT_SHADING _FOAM_NO_FOAM _FOAM_RAMP
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
@@ -55,6 +55,10 @@ Material:
         m_Texture: {fileID: 2800000, guid: dcbcf892c489d1d43b1eb58e4c031e1d, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
+    - _NormalNoiseTex:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     - _OcclusionMap:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
@@ -64,12 +68,14 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     m_Floats:
-    - _Anim: 0
+    - _Anim: 1
     - _BumpScale: 1
     - _Cutoff: 0.5
+    - _DebugNormal: 0
     - _DetailNormalMapScale: 1
     - _DstBlend: 0
-    - _EdgeWidth: 2.86
+    - _EdgeWidth: 0.17
+    - _Flat: 1
     - _Foam: 2
     - _GlossMapScale: 1
     - _Glossiness: 0.5
@@ -77,6 +83,8 @@ Material:
     - _LUT: 0
     - _Metallic: 0
     - _Mode: 0
+    - _Noise: 1
+    - _NormalScale: 1.12
     - _OcclusionStrength: 1
     - _Parallax: 0.02
     - _RelectionIntensity: 0.216
@@ -85,9 +93,9 @@ Material:
     - _SrcBlend: 1
     - _UVSec: 0
     - _WaveAmp: 0.04
-    - _WaveSpeed: 2.62
+    - _WaveSpeed: 2.24
     - _ZWrite: 1
     m_Colors:
-    - _Color: {r: 0.20000002, g: 0.41176474, b: 0.49803925, a: 0.4745098}
-    - _EdgeColor: {r: 0.8483891, g: 0.8529095, b: 0.8773585, a: 0.8}
+    - _Color: {r: 0.34576362, g: 0.34576362, b: 0.6603774, a: 0.4745098}
+    - _EdgeColor: {r: 0.7480573, g: 0.747953, b: 0.8301887, a: 0.8}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
